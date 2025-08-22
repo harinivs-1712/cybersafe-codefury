@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CyberSafe — Spot the Scam</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <header>
+    <h1>CyberSafe</h1>
+    <nav>
+      <a href="#awareness">Awareness</a>
+      <a href="#quiz">Quiz</a>
+      <a href="#detector">Scam Detector</a>
+    </nav>
+  </header>
+
+  <main>
+    <section id="awareness" class="card">
+      <h2>Awareness Tips</h2>
+      <p class="muted">Simple, relatable tips for students and senior citizens.</p>
+      <ul id="tipsList"></ul>
+    </section>
+
+    <section id="quiz" class="card">
+      <h2>Spot the Scam — Quiz</h2>
+      <div id="quizBox">
+        <p id="qText">Press Start to begin.</p>
+        <div class="btn-row">
+          <button id="startBtn">Start</button>
+          <button id="safeBtn" disabled>Safe</button>
+          <button id="scamBtn" disabled>Scam</button>
+        </div>
+        <p id="feedback" class="feedback"></p>
+        <p id="score" class="muted"></p>
+      </div>
+    </section>
+
+    <section id="detector" class="card">
+      <h2>Scam Message Detector (Demo)</h2>
+      <p class="muted">Paste any SMS/chat/email text and click Analyze.</p>
+      <textarea id="msg" rows="6" placeholder="Paste suspicious message here..."></textarea>
+      <div class="btn-row">
+        <button id="analyzeBtn">Analyze</button>
+        <button id="clearBtn" class="secondary">Clear</button>
+      </div>
+      <div id="result" class="result"></div>
+    </section>
+  </main>
+
+  <footer>
+    <small>© CyberSafe – Built in 24 hours at CodeFury 8.0</small>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
