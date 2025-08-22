@@ -54,64 +54,95 @@ const quiz = [
 
 // ---------------- Detector Logic ----------------
 const riskyKeywords = [
-  "otp","one time password","cvv","urgent","lottery","gift","prize","free",
-  "kyc","update kyc","payment link","verify account","suspend","refund","reschedule",
-  "upi","click here","limited time","pan","aadhaar","pay fee","application fee",
-  "processing fee","account blocked","bank locker","lucky draw"
+  "otp", "one time password", "cvv", "urgent", "lottery", "gift", "prize", "free",
+  "kyc", "update kyc", "payment link", "verify account", "suspend", "refund", "reschedule",
+  "upi", "click here", "limited time", "pan", "aadhaar", "pay fee", "application fee",
+  "processing fee", "account blocked", "bank locker", "lucky draw"
 ];
 
-function analyzeMessage(txt){
-  const text = (txt||"").toLowerCase();
+const translations = {
+  hi: [
+    "कभी भी OTP, CVV, या UPI PIN किसी के साथ साझा न करें।",
+    "लिंक पर क्लिक न करें, खुद वेबसाइट टाइप करें।",
+    "ईमेल एड्रेस ध्यान से जांचें।",
+    "तुरंत करने के लिए कहने वाले मैसेज से सावधान रहें।",
+    "कोई भी असली नौकरी या इनाम फीस नहीं मांगता।"
+  ],
+  kn: [
+    "OTP, CVV ಅಥವಾ UPI PIN ಅನ್ನು ಯಾರ ಜೊತೆಗೂ ಹಂಚಿಕೊಳ್ಳಬೇಡಿ.",
+    "ವೆಬ್‌ಸೈಟ್ ವಿಳಾಸವನ್ನು ನೀವು ಸ್ವತಃ ಟೈಪ್ ಮಾಡಿ.",
+    "ಇಮೇಲ್ ಕಳುಹಿಸಿದವರ ವಿಳಾಸವನ್ನು ಚೆಕ್ ಮಾಡಿ.",
+    "ತುರ್ತು ಎಂದು ಹೇಳುವ ಸಂದೇಶಗಳಿಗೆ ಮೋಸ ಹೋಗಬೇಡಿ.",
+    "ನಿಜವಾದ ಕೆಲಸ ಅಥವಾ ಬಹುಮಾನ ಶುಲ್ಕ ಕೇಳುವುದಿಲ್ಲ."
+  ]
+};
+
+function analyzeMessage(txt) {
+
+  const text = (txt || "").toLowerCase();
   let score = 0;
   let reasons = [];
 
   // keyword hits
-  riskyKeywords.forEach(k=>{
-    if(text.includes(k)){
-      score += (["otp","cvv","kyc","payment link","verify account"].includes(k) ? 2 : 1);
+  riskyKeywords.forEach(k => {
+    if (text.includes(k)) {
+      score += (["otp", "cvv", "kyc", "payment link", "verify account"].includes(k) ? 2 : 1);
       reasons.push(`Contains risky term: "${k}"`);
+
+      if (text.includes("lottery") || text.includes("prize")) {
+        reasons.push("🎰 Lottery/Prize Scam");
+      }
+      if (text.includes("kyc") || text.includes("account suspended")) {
+        reasons.push("🏦 KYC/Banking Scam");
+      }
+      if (text.includes("job") || text.includes("application fee")) {
+        reasons.push("💼 Fake Job/Internship Scam");
+      }
+      if (text.includes("otp") || text.includes("upi pin")) {
+        reasons.push("📱 OTP/UPI Scam");
+      }
     }
   });
 
   // url detection
   const urlRegex = /(https?:\/\/|www\.|bit\.ly|tinyurl\.com|t\.co|goo\.gl)/i;
-  if(urlRegex.test(text)){
+  if (urlRegex.test(text)) {
     score += 2;
     reasons.push("Contains a link/URL (verify source).");
   }
 
   // money / fee patterns
   const feeRegex = /(₹|\b(inr)\b|rs\.?)\s?\d{2,6}/i;
-  if(feeRegex.test(text) && /fee|processing|pay|send|transfer/i.test(text)){
+  if (feeRegex.test(text) && /fee|processing|pay|send|transfer/i.test(text)) {
     score += 2;
     reasons.push("Asks for money/fee upfront.");
   }
 
   // urgency pattern
-  if(/(immediately|now|within 24|expire|blocked|suspend)/i.test(text)){
+  if (/(immediately|now|within 24|expire|blocked|suspend)/i.test(text)) {
     score += 1;
     reasons.push("Creates a sense of urgency.");
   }
 
   // ask for sensitive info
-  if(/password|pin|cvv|otp/i.test(text)){
+  if (/password|pin|cvv|otp/i.test(text)) {
     score += 2;
     reasons.push("Requests sensitive information.");
   }
 
   // simple score thresholds
   let verdict, cssClass;
-  if(score >= 4){ verdict = "⚠️ High Risk: This looks suspicious."; cssClass="bad"; }
-  else if(score >= 2){ verdict = "⚠️ Medium Risk: Be cautious."; cssClass="bad"; }
-  else { verdict = "✅ Low Risk: No obvious scam signals."; cssClass="good"; }
+  if (score >= 4) { verdict = "⚠️ High Risk: This looks suspicious."; cssClass = "bad"; }
+  else if (score >= 2) { verdict = "⚠️ Medium Risk: Be cautious."; cssClass = "bad"; }
+  else { verdict = "✅ Low Risk: No obvious scam signals."; cssClass = "good"; }
 
-  return {score, reasons, verdict, cssClass};
+  return { score, reasons, verdict, cssClass };
 }
 
 // ---------------- DOM Wiring ----------------
 const tipsList = document.getElementById("tipsList");
-tips.forEach(t=>{
-  const li=document.createElement("li"); li.textContent=t; tipsList.appendChild(li);
+tips.forEach(t => {
+  const li = document.createElement("li"); li.textContent = t; tipsList.appendChild(li);
 });
 
 // Quiz state
@@ -123,36 +154,36 @@ const scamBtn = document.getElementById("scamBtn");
 const feedback = document.getElementById("feedback");
 const scoreBox = document.getElementById("score");
 
-function showQuestion(){
+function showQuestion() {
   idx++;
-  if(idx >= quiz.length){
+  if (idx >= quiz.length) {
     qText.textContent = `Quiz finished! Your score: ${score}/${quiz.length}`;
     feedback.textContent = "";
-    startBtn.textContent="Restart";
-    safeBtn.disabled = true; scamBtn.disabled = true; startBtn.disabled=false;
+    startBtn.textContent = "Restart";
+    safeBtn.disabled = true; scamBtn.disabled = true; startBtn.disabled = false;
     return;
   }
   qText.textContent = quiz[idx].text;
   feedback.textContent = "";
-  safeBtn.disabled = false; scamBtn.disabled = false; startBtn.disabled=true;
-  scoreBox.textContent = `Q ${idx+1} of ${quiz.length}`;
+  safeBtn.disabled = false; scamBtn.disabled = false; startBtn.disabled = true;
+  scoreBox.textContent = `Q ${idx + 1} of ${quiz.length}`;
 }
 
-startBtn.addEventListener("click", ()=>{
+startBtn.addEventListener("click", () => {
   idx = -1; score = 0; showQuestion();
 });
 
-safeBtn.addEventListener("click", ()=>{
+safeBtn.addEventListener("click", () => {
   const correct = !quiz[idx].isScam;
-  if(correct){ score++; feedback.textContent = "Correct! " + quiz[idx].why; feedback.className="feedback good"; }
-  else{ feedback.textContent = "Not quite. " + quiz[idx].why; feedback.className="feedback bad"; }
+  if (correct) { score++; feedback.textContent = "Correct! " + quiz[idx].why; feedback.className = "feedback good"; }
+  else { feedback.textContent = "Not quite. " + quiz[idx].why; feedback.className = "feedback bad"; }
   safeBtn.disabled = true; scamBtn.disabled = true;
   setTimeout(showQuestion, 800);
 });
-scamBtn.addEventListener("click", ()=>{
+scamBtn.addEventListener("click", () => {
   const correct = quiz[idx].isScam;
-  if(correct){ score++; feedback.textContent = "Correct! " + quiz[idx].why; feedback.className="feedback good"; }
-  else{ feedback.textContent = "Not quite. " + quiz[idx].why; feedback.className="feedback bad"; }
+  if (correct) { score++; feedback.textContent = "Correct! " + quiz[idx].why; feedback.className = "feedback good"; }
+  else { feedback.textContent = "Not quite. " + quiz[idx].why; feedback.className = "feedback bad"; }
   safeBtn.disabled = true; scamBtn.disabled = true;
   setTimeout(showQuestion, 800);
 });
@@ -163,11 +194,31 @@ const analyzeBtn = document.getElementById("analyzeBtn");
 const clearBtn = document.getElementById("clearBtn");
 const result = document.getElementById("result");
 
-analyzeBtn.addEventListener("click", ()=>{
+analyzeBtn.addEventListener("click", () => {
   const res = analyzeMessage(msg.value);
   result.innerHTML = `<p class="${res.cssClass}">${res.verdict}</p>` +
-    (res.reasons.length ? "<ul>" + res.reasons.map(r=>`<li>${r}</li>`).join("") + "</ul>" : "<p>No signals found.</p>") +
+    (res.reasons.length ? "<ul>" + res.reasons.map(r => `<li>${r}</li>`).join("") + "</ul>" : "<p>No signals found.</p>") +
     `<p class="muted">Tip: When in doubt, verify via official numbers/apps only.</p>`;
 });
 
-clearBtn.addEventListener("click", ()=>{ msg.value=""; result.innerHTML=""; });
+clearBtn.addEventListener("click", () => { msg.value = ""; result.innerHTML = ""; });
+
+
+document.getElementById("languageSelect").addEventListener("change", (e) => {
+  const lang = e.target.value;
+  if (lang !== "en") {
+    tipsList.innerHTML = "";
+    translations[lang].forEach(t => {
+      const li = document.createElement("li");
+      li.textContent = t;
+      tipsList.appendChild(li);
+    });
+  } else {
+    tipsList.innerHTML = "";
+    tips.forEach(t => {
+      const li = document.createElement("li");
+      li.textContent = t;
+      tipsList.appendChild(li);
+    });
+  }
+});
