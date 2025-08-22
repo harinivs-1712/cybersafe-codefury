@@ -1,68 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CyberSafe — Spot the Scam</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
+  <link href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 </head>
-
 <body>
-  <header>
-    <h1>CyberSafe</h1>
-    <nav>
-      <a href="#awareness">Awareness</a>
-      <a href="#quiz">Quiz</a>
-      <a href="#detector">Scam Detector</a>
 
-      <!-- 🌍 Language Selector -->
-      <select id="languageSelect">
-        <option value="en">English</option>
-        <option value="hi">हिन्दी</option>
-        <option value="kn">ಕನ್ನಡ</option>
-      </select>
-    </nav>
-  </header>
+<header>
+  <h1>CyberSafe</h1>
+  <nav>
+    <a href="#awareness"><i class='bx bx-info-circle'></i> Awareness</a>
+    <a href="#quiz"><i class='bx bx-question-mark'></i> Quiz</a>
+    <a href="#detector"><i class='bx bx-shield'></i> Detector</a>
+    <a href="#dailyUpdates"><i class='bx bx-news'></i> Updates</a>
+    <a href="#voiceGuide"><i class='bx bx-volume-full'></i> Voice</a>
+    <select id="languageSelect">
+      <option value="en">English</option>
+      <option value="hi">हिन्दी</option>
+      <option value="kn">ಕನ್ನಡ</option>
+    </select>
+    <button id="themeToggle"><i class='bx bx-moon'></i></button>
+  </nav>
+</header>
 
-  <main>
-    <section id="awareness" class="card">
-      <h2>Awareness Tips</h2>
-      <p class="muted">Simple, relatable tips for students and senior citizens.</p>
-      <ul id="tipsList"></ul>
-    </section>
+<main>
+  <!-- Awareness Tips -->
+  <section id="awareness" class="card">
+    <h2><i class='bx bx-info-circle'></i> Awareness Tips</h2>
+    <p class="muted">Simple, relatable tips for students and senior citizens.</p>
+    <ul id="tipsList"></ul>
+    <button id="randomTipBtn" class="primary">Show Random Tip</button>
+    <p id="randomTip" class="highlight"></p>
+  </section>
 
-    <section id="quiz" class="card">
-      <h2>Spot the Scam — Quiz</h2>
-      <div id="quizBox">
-        <p id="qText">Press Start to begin.</p>
-        <div class="btn-row">
-          <button id="startBtn">Start</button>
-          <button id="safeBtn" disabled>Safe</button>
-          <button id="scamBtn" disabled>Scam</button>
-        </div>
-        <p id="feedback" class="feedback"></p>
-        <p id="score" class="muted"></p>
-      </div>
-    </section>
-
-    <section id="detector" class="card">
-      <h2>Scam Message Detector (Demo)</h2>
-      <p class="muted">Paste any SMS/chat/email text and click Analyze.</p>
-      <textarea id="msg" rows="6" placeholder="Paste suspicious message here..."></textarea>
+  <!-- Quiz -->
+  <section id="quiz" class="card">
+    <h2><i class='bx bx-question-mark'></i> Spot the Scam — Quiz</h2>
+    <div id="quizBox">
+      <div class="progress-bar"><div id="quizProgress"></div></div>
+      <p id="qText">Press Start to begin.</p>
       <div class="btn-row">
-        <button id="analyzeBtn">Analyze</button>
-        <button id="clearBtn" class="secondary">Clear</button>
+        <button id="startBtn" class="primary">Start</button>
+        <button id="safeBtn" disabled>Safe</button>
+        <button id="scamBtn" disabled>Scam</button>
       </div>
-      <div id="result" class="result"></div>
-    </section>
-  </main>
+      <p id="feedback" class="feedback"></p>
+      <p id="score" class="muted"></p>
+    </div>
+  </section>
 
-  <footer>
-    <small>© CyberSafe – Built in 24 hours at CodeFury 8.0</small>
-  </footer>
+  <!-- Scam Detector -->
+  <section id="detector" class="card">
+    <h2><i class='bx bx-shield'></i> Scam Message Detector</h2>
+    <p class="muted">Paste any SMS/chat/email text and click Analyze.</p>
+    <textarea id="msg" rows="6" placeholder="Paste suspicious message here..."></textarea>
+    <div class="btn-row">
+      <button id="analyzeBtn" class="primary">Analyze</button>
+      <button id="clearBtn" class="secondary">Clear</button>
+    </div>
+    <div id="result" class="result"></div>
+  </section>
 
-  <script src="script.js"></script>
+  <!-- Daily Updates -->
+  <section id="dailyUpdates" class="card">
+    <h2><i class='bx bx-news'></i> Daily Fraud Updates</h2>
+    <ul id="updatesList"></ul>
+  </section>
+
+  <!-- Voice Guidance -->
+  <section id="voiceGuide" class="card">
+    <h2><i class='bx bx-volume-full'></i> Voice Guidance</h2>
+    <p class="muted">Click the button to hear instructions.</p>
+    <button id="voiceBtn" class="primary">Play Voice Guidance</button>
+  </section>
+</main>
+
+<footer>
+  <small>© CyberSafe – Built in 24 hours at CodeFury 8.0</small>
+</footer>
+
+<script src="script.js"></script>
 </body>
-
 </html>
